@@ -1,0 +1,9 @@
+        <% tags.each do |tag| %>
+            <% if used_tags.index(tag) %>
+              <% path = @video.present? ? remove_tag_video_path(@video, tag: tag) : rabbithole_videos_path(remove_tag: tag, tagged_with: params[:tagged_with]) %>
+              <%= link_to tag, path, class:"bg-green-600 hover:bg-green-500 py-1 px-2 whitespace-nowrap" %>
+            <% else %>
+                <% path = @video.present? ? add_tag_video_path(@video, tag: tag) : rabbithole_videos_path(add_tag: tag, tagged_with: params[:tagged_with]) %>
+                <%= link_to tag, path, class:"bg-slate-600 hover:bg-slate-500 py-1 px-2 whitespace-nowrap" %>
+            <% end %>
+        <% end %>

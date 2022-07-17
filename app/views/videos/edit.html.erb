@@ -1,0 +1,18 @@
+<h1>Editing video</h1>
+
+<%= render "form", video: @video %>
+<br>
+  <p>
+    <strong>Filesize:</strong>
+    <%= @video.byte_size %>
+  </p>
+
+  <p>
+    <strong>Checksum:</strong>
+    <%= @video.checksum %>
+  </p>
+
+<div>
+  <%= link_to "Show this video", @video %> |
+  <%= link_to "Back to videos", videos_path %>
+</div>

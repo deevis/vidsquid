@@ -1,0 +1,24 @@
+<% width ||= 200 %>
+<% height ||= 200 %>
+<% show_tags ||= 'true' %>
+<% hide_tags ||= [] %>
+
+<div id="<%= dom_id video %>" class="items-center">
+  <p class="text-sm break-words">
+    <%= link_to video.title, video %>
+    <%= link_to "⇓", rails_blob_path(video.file, disposition: 'attachment') %>
+  </p>
+    <% if show_tags == 'true' %>
+      <div class="m-2 text-sm">
+            <% video.tag_list.sort.each do |tag| %>
+              <% if !hide_tags.index(tag) %>
+                <div class="bg-green-600 hover:bg-green-500 py-1 px-1 m-1 my-1">
+                    <%= tag %>
+                </div>
+              <% end %>
+            <% end %>
+      </div>
+    <% end %>
+    <%= video_tag url_for(video.file), size: "#{width}x#{height}", controls: true %>
+
+</div>

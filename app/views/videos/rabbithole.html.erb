@@ -1,0 +1,31 @@
+<div>
+    <h1 class="text-2xl">RabbitHole</h1>
+</div>
+<div class="text-sm">
+    <% most_used_tags = ActsAsTaggableOn::Tag.most_used(200).map{|t| t.name} %>
+    <% if @used_tags.present? %>
+      <%= render 'shared/tag_cloud', used_tags: @used_tags, tags: Hash[@tag_cloud.sort{|a,b| b[1] <=> a[1]}].keys %>
+      <br/>
+      <%= @videos.count %> Videos...
+      <br/>
+      <div id="videos" class="container mx-auto">
+        <div class="grid grid-cols-6 grid-rows-2 gap-0">
+          <% @videos.each do |video| %>
+            <div style="width: 210px; overflow: hidden">
+              <%= render video, hide_tags: @used_tags %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div>
+          <%= render 'shared/tag_cloud', used_tags: [], tags: most_used_tags.sort %>
+      </div>
+      <br/>
+      <div class="text-xs">
+          <% cloud = ActsAsTaggableOn::Tag.order(:name).pluck(:name) - most_used_tags %>
+          <%= render 'shared/tag_cloud', used_tags: [], tags: cloud %>
+      </div>
+    <% end %>
+</div>
+

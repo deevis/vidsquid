@@ -1,0 +1,21 @@
+<p style="color: green"><%= notice %></p>
+
+<div>
+    <h1 class="text-2xl">Videos</h1>
+    <%= paginate @videos %>
+</div>
+
+<div id="videos" class="container mx-auto">
+  <div class="grid grid-cols-6 grid-rows-2 gap-0">
+    <% @videos.each do |video| %>
+      <div style="width: 210px; overflow: hidden">
+        <%= render video %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div>
+    <%= paginate @videos %>
+    <%= link_to "New video", new_video_path, class: "button" %>
+</div>
