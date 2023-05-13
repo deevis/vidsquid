@@ -14,6 +14,11 @@
         <% end %>
         <%= link_to "Next Untagged Video", next_untagged_video_videos_path,class: "bg-blue-600 hover:bg-blue-700 py-2 px-4 border border-indigo-500 rounded shadow" %>
       </div>
+      <div class="mt-2">
+        <p class="text-sm break-words">
+          <%= @video.whisper_txt %>
+        </p>
+      </div>
   </div>
   <div class="col-span-5 grid grid-cols-1 m-4">
     <div class="text-sm">

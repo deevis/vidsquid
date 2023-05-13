@@ -1,5 +1,6 @@
 class VideosController < ApplicationController
-  before_action :set_video, only: %i[ show edit update destroy add_tag remove_tag]
+  before_action :set_video, only: %i[ show edit update destroy add_tag 
+                                      remove_tag populate_whisper_transcription]
 
   def add_tag
     @video.tag_list.add(params[:tag], parse: true)
@@ -47,15 +48,44 @@ class VideosController < ApplicationController
   end
 
   def next_untagged_video
-    total_ids = Video.pluck(:id)
-    tagged_ids = ActsAsTaggableOn::Tagging.pluck(:taggable_id).uniq
-    ids = total_ids - tagged_ids
+    total_vids = Video.count
+    ids = untagged_video_ids
+    tagged_count = total_vids - ids.length
     id = ids.sample
     if id.present?
-      redirect_to Video.find(id), notice: "You have tagged #{tagged_ids.length}/#{total_ids.length} videos."
+      redirect_to Video.find(id), notice: "You have tagged #{tagged_count}/#{total_vids} videos."
     else
       redirect_back notice: "ALL VIDEOS ALREADY TAGGED!!!", fallback_location: root_path
     end
+  end
+
+  def list_untranscribed_video_paths
+    videos = Video.where(whisper_txt: nil).limit(1500).find_each.map do |v|
+      blob = v.file.blob
+      { id: v.id, path: blob.service.path_for(blob.key)}
+    end
+    render json: {count: videos.length, videos: videos}
+  end
+
+  def populate_whisper_transcription
+    model = params[:model].presence || "medium"
+    @video.populate_whisper_data(model)
+    render json: @video.as_json
+  end
+
+  def list_untagged_video_paths
+    ids = untagged_video_ids
+    videos = Video.where(id: ids).find_each.map do |v|
+      blob = v.file.blob
+      { id: v.id, path: blob.service.path_for(blob.key)}
+    end
+    render json: {count: videos.length, videos: videos}
+  end
+
+  def untagged_video_ids
+    total_ids = Video.pluck(:id)
+    tagged_ids = ActsAsTaggableOn::Tagging.pluck(:taggable_id).uniq
+    ids = total_ids - tagged_ids
   end
 
   # GET /videos or /videos.json

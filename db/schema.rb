@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_06_010516) do
+ActiveRecord::Schema.define(version: 2023_04_30_230435) do
 
   create_table "action_text_rich_texts", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -74,7 +74,7 @@ ActiveRecord::Schema.define(version: 2022_02_06_010516) do
   end
 
   create_table "tags", charset: "utf8mb4", force: :cascade do |t|
-    t.string "name", collation: "utf8_bin"
+    t.string "name", collation: "utf8mb3_bin"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "taggings_count", default: 0
@@ -88,6 +88,8 @@ ActiveRecord::Schema.define(version: 2022_02_06_010516) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "filename"
+    t.string "whisper_model"
+    t.text "whisper_txt"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
