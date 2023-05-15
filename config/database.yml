@@ -16,6 +16,7 @@ default: &default
   username: <%= ENV['DB_USERNAME'].presence || "vidsquid" %>
   password: <%= ENV['DB_PASSWORD'] %>
   host: <%= ENV['DB_HOST'] %>
+  port: <%= ENV['DB_PORT'].presence || 3306 %>
 
 development:
   <<: *default
