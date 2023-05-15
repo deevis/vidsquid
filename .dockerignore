@@ -1,0 +1,7 @@
+.git
+.gitattributes
+
+log/development.log
+storage
+test
+tmp/cache

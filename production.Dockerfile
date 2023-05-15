@@ -4,11 +4,11 @@ FROM ruby:3.1.2-slim
 # BUILDING  ( run from bin/build_docker_arm64.bat) (or .sh)
 # (new way) 
 # docker buildx build -f production.Dockerfile --platform linux/arm64 -t smart-rooms-arm64 .
-# docker image tag smart-rooms-arm64:latest 192.168.1.199:5000/deevis/smart-rooms-arm64:latest
-# docker image push 192.168.1.199:5000/deevis/smart-rooms-arm64:latest
+# docker image tag smart-rooms-arm64:latest 192.168.0.43:5000/deevis/smart-rooms-arm64:latest
+# docker image push 192.168.0.43:5000/deevis/smart-rooms-arm64:latest
 # 
 # In your docker engine configuration, add this to prevent: server gave HTTP response to HTTPS client
-#    "insecure-registries": ["192.168.1.199/8"]
+#    "insecure-registries": ["192.168.0.43/8"]
 #
 
 
