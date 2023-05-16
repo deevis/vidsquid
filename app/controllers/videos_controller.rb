@@ -4,10 +4,16 @@ class VideosController < ApplicationController
   before_action :set_video, only: %i[ show edit update destroy add_tag 
                                       remove_tag populate_whisper_transcription]
 
+  # TODO: Add authentication
   skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag]
 
   def add_tag
-    @video.tag_list.add(params[:tag], parse: true)
+    tags = params[:tag].split(",")
+    tag_string = tags.map do |tag|
+      tag.gsub("#", "").titleize.downcase
+    end.join(",")
+
+    @video.tag_list.add(tag_string, parse: true)
     @video.save!
     redirect_to @video
   end
