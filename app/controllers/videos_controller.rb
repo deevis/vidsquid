@@ -1,6 +1,10 @@
 class VideosController < ApplicationController
+  include ActiveStorage::SetCurrent
+  
   before_action :set_video, only: %i[ show edit update destroy add_tag 
                                       remove_tag populate_whisper_transcription]
+
+  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription]
 
   def add_tag
     @video.tag_list.add(params[:tag], parse: true)
@@ -62,14 +66,16 @@ class VideosController < ApplicationController
   def list_untranscribed_video_paths
     videos = Video.where(whisper_txt: nil).limit(1500).find_each.map do |v|
       blob = v.file.blob
-      { id: v.id, path: blob.service.path_for(blob.key)}
+      { id: v.id, storage_name: blob.key, path: blob.service.path_for(blob.key), url: v.download_url}
     end
     render json: {count: videos.length, videos: videos}
   end
 
   def populate_whisper_transcription
-    model = params[:model].presence || "medium"
-    @video.populate_whisper_data(model)
+    # optional params: whisper_txt, whisper_tsv, whisper_model
+    whisper_model = params[:whisper_model].presence || "medium"
+    whisper_txt, whisper_tsv = params[:whisper_txt], params[:whisper_tsv]
+    @video.populate_whisper_data(whisper_txt: whisper_txt, whisper_tsv: whisper_tsv, whisper_model: whisper_model)
     render json: @video.as_json
   end
 

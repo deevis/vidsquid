@@ -9,6 +9,11 @@ class Video < ApplicationRecord
     ActiveStorage::Blob.service.path_for(file.key)
   end
 
+
+  def download_url
+    file.url
+  end
+
   # whisper_tsv - Returns the timecoded transcription TSV file's contents
   # 
   # eg: 
@@ -27,6 +32,13 @@ class Video < ApplicationRecord
     end
   end
 
+  def set_whisper_tsv(whisper_tsv)
+    filepath = "#{file_on_disk}.tsv"
+    File.open(filepath, 'w') do |f|
+      f.write(whisper_tsv)
+    end
+  end
+  
   def read_whisper_txt
     filepath = "#{file_on_disk}.txt"
     if File.exist?(filepath)
@@ -36,20 +48,30 @@ class Video < ApplicationRecord
     end
   end
 
-  def populate_whisper_data(model_used='medium')  # large, base
-    self.whisper_txt = read_whisper_txt
-    self.whisper_model = model_used
+  # populate_whisper_data - 2 modes:
+  #     1) whisper_txt and whisper_tsv are provided, and we use provided values
+  #     2) whisper_txt and whisper_tsv are NOT provided, and we use data in the file system
+  # 
+  def populate_whisper_data(whisper_txt: nil, whisper_tsv: nil, whisper_model: 'medium')  # large, base
+    if whisper_txt.nil?
+      self.whisper_txt = read_whisper_txt
+    else
+      self.whisper_txt = whisper_txt
+      set_whisper_tsv(whisper_tsv)
+    end
+    
+    self.whisper_model = whisper_model
     self.save!
   end
 
-  def self.populate_whisper_data(model_used='medium')  # large, base
+  def self.populate_whisper_data(whisper_model='medium')  # large, base
     # First, get the videos that don't have whisper attributes, but do have whisper files created
     newly_transcribed = Video.find_each.select{|v| v.whisper_tsv.present? && v.whisper_txt.nil?}
     count = 0
     errors = []
     newly_transcribed.each do |v|
       begin
-        v.populate_whisper_data(model_used)
+        v.populate_whisper_data(whisper_model)
         count += 1
       rescue => e
         errors << {video_id: v.id, error: e.message}

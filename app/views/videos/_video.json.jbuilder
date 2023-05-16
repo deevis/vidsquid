@@ -1,2 +1,2 @@
-json.extract! video, :id, :title, :filesize, :md5, :created_at, :updated_at
+json.extract! video, :id, :file_on_disk, :title, :whisper_txt, :whisper_model, :download_url, :byte_size, :checksum, :created_at, :updated_at
 json.url video_url(video, format: :json)

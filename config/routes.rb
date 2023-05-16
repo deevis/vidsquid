@@ -3,7 +3,7 @@ Rails.application.routes.draw do
     member do
       get :add_tag
       get :remove_tag
-      get :populate_whisper_transcription, format: :json
+      post :populate_whisper_transcription, format: :json # whisper_txt, whisper_tsv, whisper_model
     end
     collection do
       get :rabbithole
