@@ -5,10 +5,6 @@ class Video < ApplicationRecord
   # Gets called when ActiveStorage file changes
   after_touch :set_stats
 
-  def tag_array
-    tags.map(&:name)
-  end
-
   def file_on_disk
     ActiveStorage::Blob.service.path_for(file.key)
   end
