@@ -4,7 +4,7 @@ class VideosController < ApplicationController
   before_action :set_video, only: %i[ show edit update destroy add_tag 
                                       remove_tag populate_whisper_transcription]
 
-  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription]
+  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag]
 
   def add_tag
     @video.tag_list.add(params[:tag], parse: true)
