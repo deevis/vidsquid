@@ -1,38 +1,76 @@
 <p style="color: green"><%= notice %></p>
-<div class="grid grid-cols-6 grid-rows-1">
-  <div class="items-center">
-      <%= render @video, width: 300, height: 600 %>
-
-      <div class="grid grid-cols-3">
-        <%= link_to "Edit this video", edit_video_path(@video), style: "max-width: 100px;", class: "bg-blue-600 hover:bg-blue-700 py-2 px-4 border border-indigo-500 rounded shadow" %>
-        <%= link_to "Back to videos", videos_path, style: "max-width: 100px;",  class: "bg-blue-600 hover:bg-blue-700 ml-2 py-2 px-4 border border-indigo-500 rounded shadow" %>
-        <%= button_to "Destroy video", @video, method: :delete, class: "bg-red-600 hover:bg-red-700 ml-2 py-2 px-4 border border-orange-500 rounded shadow", data: {confirm: "Are you sure you want to destroy this video?"} %>
-      </div>
+<div class="grid grid-cols-4 grid-rows-1">
+  <div class="px-2 py-5 text-sm">
+      <h3>Tags</h3>
+      <% @video.tag_list.sort.each do |tag| %>
+          <div class="bg-green-600 hover:bg-green-500 py-1 px-1 m-1 my-1">
+              <%= tag %>
+          </div>
+      <% end %>
       <div class="text-black">
         <%= form_with(method: :get, url: add_tag_video_path(@video)) do |form| %>
-          <% form.text_field :tag, placeholder: 'Add Tag', class: "w-96" %>
+          <% form.text_area :tag, placeholder: 'Add Tags', rows: 4, cols: 36 %>
         <% end %>
-        <%= link_to "Next Untagged Video", next_untagged_video_videos_path,class: "bg-blue-600 hover:bg-blue-700 py-2 px-4 border border-indigo-500 rounded shadow" %>
       </div>
       <div class="mt-2">
         <p class="text-sm break-words">
+          <h3>Whisper Transcription</h3>
+          <hr>
           <%= @video.whisper_txt %>
         </p>
       </div>
+    
+      </div>
+
+  <div class="px-2 py-5 items-center">
+      <%= render @video, width: "100%", height: 600, show_tags: 'false' %>
+      <div class="mt-2">
+        <div class="grid grid-cols-3">
+          <%= link_to "Edit Video", edit_video_path(@video), class: "action-edit" %>
+          <%= link_to "Videos Index", videos_path, class: "action-back" %>
+          <%= button_to "Destroy video", @video, method: :delete, class: "action-destroy", data: {confirm: "Are you sure you want to destroy this video?"} %>
+        </div>
+      </div>
   </div>
-  <div class="col-span-5 grid grid-cols-1 m-4">
-    <div class="text-sm">
-        <% used_tags = @video.tag_list %>
-        <% most_used_tags = ActsAsTaggableOn::Tag.most_used(25).map{|t| t.name} %>
-        <div>
-            <%= render 'shared/tag_cloud', used_tags: used_tags, tags: most_used_tags.sort %>
-        </div>
-        <br/>
-        <div class="text-xs">
-            <% cloud = ActsAsTaggableOn::Tag.order(:name).pluck(:name) - most_used_tags %>
-            <%= render 'shared/tag_cloud', used_tags: used_tags, tags: cloud %>
-        </div>
+
+  <div class="px-2 py-5 text-xs col-span-2">
+    <% whisper_tsv = @video.whisper_tsv %>
+    <% if whisper_tsv.present? %>
+      <h3>Whisper TSV</h3>
+      <hr>
+      <div class="grid grid-cols-10">
+          <% lines = whisper_tsv.split("\n") %>
+          <% #skip first line %>
+          <% lines[1...-1].each do |line| %>
+            <% parts = line.split("\t") %>
+              <div><%= parts[0] %></div>
+              <div><%= parts[1] %></div>
+              <div class="col-span-8"><%= parts[2] %></div>
+          <% end %>
+      </div>  
+    <% end %>
+    <div class="mt-2">
+      <%= link_to "Next Untagged Video", next_untagged_video_videos_path, class: "action-secondary" %>
     </div>
 
   </div>
-</div>
+
+  <!-- This tag cloud is disabled for now -->
+  <% if false %>
+    <div class="col-span-5 grid grid-cols-1 m-4">
+      <div class="text-sm">
+          <% used_tags = @video.tag_list %>
+          <% most_used_tags = ActsAsTaggableOn::Tag.most_used(25).map{|t| t.name} %>
+          <div>
+              <%= render 'shared/tag_cloud', used_tags: used_tags, tags: most_used_tags.sort %>
+          </div>
+          <br/>
+          <div class="text-xs">
+              <% cloud = ActsAsTaggableOn::Tag.order(:name).pluck(:name) - most_used_tags %>
+              <%= render 'shared/tag_cloud', used_tags: used_tags, tags: cloud %>
+          </div>
+      </div>
+
+    </div>
+  <% end %>
+  </div>

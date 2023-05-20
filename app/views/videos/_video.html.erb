@@ -4,7 +4,7 @@
 <% hide_tags ||= [] %>
 
 <div id="<%= dom_id video %>" class="items-center">
-  <p class="text-sm break-words">
+  <p class="text-sm break-words items-center">
     <%= link_to video.title, video %>
     <%= link_to "⇓", rails_blob_path(video.file, disposition: 'attachment') %>
   </p>

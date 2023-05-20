@@ -6,11 +6,13 @@ class Video < ApplicationRecord
   after_touch :set_stats
 
   def file_on_disk
+    return nil if file.key.nil?
     ActiveStorage::Blob.service.path_for(file.key)
   end
 
 
   def download_url
+    return nil if file.nil?
     file.url
   end
 
@@ -24,6 +26,7 @@ class Video < ApplicationRecord
   # 10600  14200  millennials, actually do see value in something which is digital rather than
   
   def whisper_tsv
+    return nil if file.nil?
     filepath = "#{file_on_disk}.tsv"
     if File.exist?(filepath)
       File.readlines(filepath).join
@@ -33,6 +36,7 @@ class Video < ApplicationRecord
   end
 
   def set_whisper_tsv(whisper_tsv)
+    return nil if file.nil?
     filepath = "#{file_on_disk}.tsv"
     File.open(filepath, 'w') do |f|
       f.write(whisper_tsv)

@@ -10,6 +10,9 @@ module Vidsquid
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    
+    # https://github.com/rails/web-console/blob/master/README.markdown#configweb_consolewhitelisted_ips
+    config.web_console.permissions = '172.22.177.97'
 
     # Configuration for the application, engines, and railties goes here.
     #
