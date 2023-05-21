@@ -42,9 +42,12 @@
       </div>
   </div>
 
+  <% video_id = dom_id @video %>
+
   <div class="px-2 py-5 text-xs col-span-2">
     <% whisper_tsv = @video.whisper_tsv %>
     <% if whisper_tsv.present? %>
+
       <h3>Whisper TSV <small>(<%= @video.whisper_model %>)</small></h3>
       <hr>
       <div class="grid grid-cols-10">
@@ -52,31 +55,40 @@
           <% #skip first line - fun fact: doing array range with 3 dots [1...-1] will leave off the last line :( %>
           <% lines[1..-1].each do |line| %>
             <% parts = line.split("\t") %>
-              <div><%= parts[0] %></div>
-              <div><%= parts[1] %></div>
-              <div class="col-span-8"><%= parts[2] %></div>
+              <% ts1 = convert_tsv_timestamp(parts[0])  %>
+              <% ts2 = convert_tsv_timestamp(parts[1])  %>
+              <div><%= ts1[:display] %></div>
+              <div><%= ts2[:display] %></div>
+              <div onclick='video_seek(<%= ts1[:seconds]%>);' data-start-seconds="<%= ts1[:seconds] %>" data-end-seconds="<%= ts2[:seconds] %>" class="tsv-transcript col-span-8"><%= parts[2] %></div>
           <% end %>
       </div>  
     <% end %>
 
   </div>
 
-  <!-- This tag cloud is disabled for now -->
-  <% if false %>
-    <div class="col-span-5 grid grid-cols-1 m-4">
-      <div class="text-sm">
-          <% used_tags = @video.tag_list %>
-          <% most_used_tags = ActsAsTaggableOn::Tag.most_used(25).map{|t| t.name} %>
-          <div>
-              <%= render 'shared/tag_cloud', used_tags: used_tags, tags: most_used_tags.sort %>
-          </div>
-          <br/>
-          <div class="text-xs">
-              <% cloud = ActsAsTaggableOn::Tag.order(:name).pluck(:name) - most_used_tags %>
-              <%= render 'shared/tag_cloud', used_tags: used_tags, tags: cloud %>
-          </div>
-      </div>
+</div>
 
-    </div>
-  <% end %>
-  </div>
+<script>
+  var js_video = document.getElementById("<%= video_id %>");
+  js_video.ontimeupdate = function() {highlight_tsv()};
+
+function highlight_tsv() {
+  // Find the .tsv-transcript element with data-start-seconds <= current time < data-end-seconds
+  var current_time = js_video.currentTime;
+  var divs = document.querySelectorAll(".tsv-transcript")
+  for (var i = 0; i < divs.length; i++) {
+    var div = divs[i];
+    var start_seconds = div.getAttribute("data-start-seconds");
+    var end_seconds = div.getAttribute("data-end-seconds");
+    if (start_seconds <= current_time && current_time < end_seconds) {
+      div.classList.add("bg-green-600");
+    } else {
+      div.classList.remove("bg-green-600");
+    }
+  }
+}
+
+  function video_seek(time) {
+    js_video.currentTime = time;
+  }
+</script>

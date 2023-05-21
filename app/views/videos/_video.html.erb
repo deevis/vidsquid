@@ -3,7 +3,8 @@
 <% show_tags ||= 'true' %>
 <% hide_tags ||= [] %>
 
-<div id="<%= dom_id video %>" class="items-center">
+<% video_id = dom_id video %>
+<div id="<%= video_id %>_container" class="items-center">
   <p class="text-sm break-words items-center">
     <%= link_to video.title, video %>
     <%= link_to "⇓", rails_blob_path(video.file, disposition: 'attachment') %>
@@ -19,6 +20,6 @@
             <% end %>
       </div>
     <% end %>
-    <%= video_tag url_for(video.file), size: "#{width}x#{height}", controls: true %>
+    <%= video_tag url_for(video.file), size: "#{width}x#{height}", controls: true, id: video_id %>
 
 </div>
