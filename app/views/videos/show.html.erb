@@ -49,8 +49,8 @@
       <hr>
       <div class="grid grid-cols-10">
           <% lines = whisper_tsv.split("\n") %>
-          <% #skip first line %>
-          <% lines[1...-1].each do |line| %>
+          <% #skip first line - fun fact: doing array range with 3 dots [1...-1] will leave off the last line :( %>
+          <% lines[1..-1].each do |line| %>
             <% parts = line.split("\t") %>
               <div><%= parts[0] %></div>
               <div><%= parts[1] %></div>
