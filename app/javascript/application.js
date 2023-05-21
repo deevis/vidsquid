@@ -5,7 +5,3 @@ import "@hotwired/turbo-rails"
 // import "@rails/actiontext"
 import * as ActiveStorage from "@rails/activestorage"
 ActiveStorage.start()
-
-import jquery from "jquery"
-window.$ = jquery
-window.jQuery = jquery
