@@ -1,6 +1,22 @@
+# == Schema Information
+#
+# Table name: videos
+#
+#  id            :bigint           not null, primary key
+#  title         :string(255)
+#  byte_size     :integer
+#  checksum      :string(255)
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  filename      :string(255)
+#  whisper_model :string(255)
+#  whisper_txt   :text(65535)
+#
 class Video < ApplicationRecord
+  has_many :ai_markups, dependent: :destroy
   has_one_attached :file
   acts_as_taggable_on :tags
+
 
   # Gets called when ActiveStorage file changes
   after_touch :set_stats
@@ -50,6 +66,12 @@ class Video < ApplicationRecord
     else
       raise "No transcription file: #{filepath}"
     end
+  end
+
+  # generating_model_name, summary_x, title_x, hashtags_x, people_identified, places_identifed
+  def populate_ai_markup(params)
+    ai_markup = self.ai_markups.where(generating_model_name: params[:generating_model_name]).first_or_create
+    ai_markup.update!(params.permit!)
   end
 
   # populate_whisper_data - 2 modes:

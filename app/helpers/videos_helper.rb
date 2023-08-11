@@ -11,7 +11,7 @@ module VideosHelper
             seconds = time_seconds.to_i % 60
             display = "#{minutes}:#{seconds.to_s.rjust(2,'0')}.#{(frac * 100).to_i.to_s.rjust(2,'0')}"
         else
-            display = "#{(((time_seconds.to_i % 60) + time_seconds - time_seconds.to_i).round(2)).to_s}"
+            display = "#{time_seconds.to_i}.#{(frac * 100).to_i.to_s.rjust(2,'0')}"
         end
         {seconds: time_seconds, display: display}
     end

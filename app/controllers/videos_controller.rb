@@ -2,7 +2,8 @@ class VideosController < ApplicationController
   include ActiveStorage::SetCurrent
   
   before_action :set_video, only: %i[ show edit update destroy add_tag 
-                                      remove_tag populate_whisper_transcription]
+                                      remove_tag populate_whisper_transcription
+                                      populate_ai_markup]
 
   # TODO: Add authentication
   skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag]
@@ -70,11 +71,24 @@ class VideosController < ApplicationController
   end
 
   def list_untranscribed_video_paths
-    videos = Video.where(whisper_txt: nil).limit(1500).find_each.map do |v|
+    videos = Video.where(whisper_txt: nil).limit(500).find_each.map do |v|
       blob = v.file.blob
       { id: v.id, storage_name: blob.key, path: blob.service.path_for(blob.key), url: v.download_url}
     end
     render json: {count: videos.length, videos: videos}
+  end
+
+  def list_transcribed_video_paths
+    whisper_model = params[:whisper_model].presence
+    if whisper_model.present?
+      videos = Video.where(whisper_model: whisper_model).limit(500).find_each.map do |v|
+        blob = v.file.blob
+        { id: v.id, storage_name: blob.key, path: blob.service.path_for(blob.key), url: v.download_url}
+      end
+      render json: {count: videos.length, videos: videos}
+    else
+      render json: {error: "Must specify whisper_model"}  
+    end
   end
 
   def populate_whisper_transcription
@@ -85,6 +99,14 @@ class VideosController < ApplicationController
     render json: @video.as_json
   end
 
+  # post :populate_ai_markup, format: :json # generating_model_name, summary_1, title_1, hashtags_1, people_identified, places_identifed
+  def populate_ai_markup
+    ai_markup = @video.populate_ai_markup(params)
+    render json: ai_markup.as_json
+  rescue => e
+    render json: {error: e.message}
+  end
+
   def list_untagged_video_paths
     ids = untagged_video_ids
     videos = Video.where(id: ids).find_each.map do |v|
@@ -92,12 +114,6 @@ class VideosController < ApplicationController
       { id: v.id, path: blob.service.path_for(blob.key)}
     end
     render json: {count: videos.length, videos: videos}
-  end
-
-  def untagged_video_ids
-    total_ids = Video.pluck(:id)
-    tagged_ids = ActsAsTaggableOn::Tagging.pluck(:taggable_id).uniq
-    ids = total_ids - tagged_ids
   end
 
   # GET /videos or /videos.json
@@ -166,6 +182,12 @@ class VideosController < ApplicationController
   end
 
   private
+    def untagged_video_ids
+      total_ids = Video.pluck(:id)
+      tagged_ids = ActsAsTaggableOn::Tagging.pluck(:taggable_id).uniq
+      ids = total_ids - tagged_ids
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_video
       @video = Video.find(params[:id])

@@ -10,15 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_30_230435) do
-
+ActiveRecord::Schema[7.0].define(version: 2023_08_11_051205) do
   create_table "action_text_rich_texts", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
     t.string "record_type", null: false
     t.bigint "record_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
@@ -27,7 +26,7 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
     t.string "record_type", null: false
     t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
-    t.datetime "created_at", precision: 6, null: false
+    t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
@@ -40,7 +39,7 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
     t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
-    t.datetime "created_at", precision: 6, null: false
+    t.datetime "created_at", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -50,6 +49,28 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "ai_markups", charset: "utf8mb4", force: :cascade do |t|
+    t.bigint "video_id", null: false
+    t.string "summary_1", limit: 1000
+    t.string "summary_2", limit: 1000
+    t.string "summary_3", limit: 1000
+    t.string "title_1", limit: 200
+    t.string "title_2", limit: 200
+    t.string "title_3", limit: 200
+    t.string "hashtags_1", limit: 100
+    t.string "hashtags_2", limit: 100
+    t.string "hashtags_3", limit: 100
+    t.string "people_identified", limit: 256
+    t.string "places_identified", limit: 256
+    t.string "generating_model_name", limit: 128
+    t.integer "summary_chosen"
+    t.integer "title_chosen"
+    t.integer "hashtags_chosen"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["video_id"], name: "index_ai_markups_on_video_id"
+  end
+
   create_table "taggings", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "tag_id"
     t.string "taggable_type"
@@ -57,7 +78,7 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
     t.string "tagger_type"
     t.bigint "tagger_id"
     t.string "context", limit: 128
-    t.datetime "created_at", precision: 6
+    t.datetime "created_at"
     t.string "tenant", limit: 128
     t.index ["context"], name: "index_taggings_on_context"
     t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true
@@ -75,8 +96,8 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
 
   create_table "tags", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", collation: "utf8mb3_bin"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
@@ -85,8 +106,8 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
     t.string "title"
     t.integer "byte_size"
     t.string "checksum"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "filename"
     t.string "whisper_model"
     t.text "whisper_txt"
@@ -94,5 +115,6 @@ ActiveRecord::Schema.define(version: 2023_04_30_230435) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_markups", "videos"
   add_foreign_key "taggings", "tags"
 end
