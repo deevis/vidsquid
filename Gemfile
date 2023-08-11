@@ -51,6 +51,8 @@ gem "ransack"
 
 gem 'acts-as-taggable-on', '~> 9.0'
 
+gem 'awesome_print'
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 gem 'streamio-ffmpeg'

@@ -70,6 +70,9 @@ class Video < ApplicationRecord
 
   # generating_model_name, summary_x, title_x, hashtags_x, people_identified, places_identifed
   def populate_ai_markup(params)
+    params.each do |k,v|
+      puts "Param[#{k}] => #{v}"
+    end
     ai_markup = self.ai_markups.where(generating_model_name: params[:generating_model_name]).first_or_create
     ai_markup.update!(params.permit!)
   end

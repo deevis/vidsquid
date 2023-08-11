@@ -70,6 +70,7 @@ GEM
       activerecord (>= 6.0, < 7.1)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    awesome_print (1.9.2)
     bcrypt (3.1.16)
     bindex (0.8.1)
     bootsnap (1.10.3)
@@ -273,6 +274,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts-as-taggable-on (~> 9.0)
+  awesome_print
   bootsnap
   byebug
   capybara

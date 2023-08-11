@@ -45,10 +45,18 @@
   <% video_id = dom_id @video %>
 
   <div class="px-2 py-5 text-xs col-span-2">
+    <% @video.ai_markups.each do |aim| %>
+      <h3 class="pt-3">AI Markup <small>(<%= aim.generating_model_name %>)</small></h3>
+      <hr>
+      <% aim.attributes.except("id", "video_id", "created_at", "updated_at", "generating_model_name").each do |k,v| %>
+        <% next if v.blank? %>
+        <div><span class="font-bold"><%= k %></span>: <%= v %></div>
+      <% end %>
+    <% end %>
     <% whisper_tsv = @video.whisper_tsv %>
     <% if whisper_tsv.present? %>
 
-      <h3>Whisper TSV <small>(<%= @video.whisper_model %>)</small></h3>
+      <h3 class="pt-3">Whisper TSV <small>(<%= @video.whisper_model %>)</small></h3>
       <hr>
       <div class="grid grid-cols-10">
           <% lines = whisper_tsv.split("\n") %>

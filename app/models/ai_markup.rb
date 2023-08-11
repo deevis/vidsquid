@@ -24,4 +24,7 @@
 #
 class AiMarkup < ApplicationRecord
   belongs_to :video
+
+  validates :video_id, presence: true
+  validates :generating_model_name, presence: true
 end

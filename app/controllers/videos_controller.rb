@@ -6,7 +6,7 @@ class VideosController < ApplicationController
                                       populate_ai_markup]
 
   # TODO: Add authentication
-  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag]
+  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag populate_ai_markup]
 
   def add_tag
     tags = params[:tag].split(",")
@@ -101,7 +101,8 @@ class VideosController < ApplicationController
 
   # post :populate_ai_markup, format: :json # generating_model_name, summary_1, title_1, hashtags_1, people_identified, places_identifed
   def populate_ai_markup
-    ai_markup = @video.populate_ai_markup(params)
+    raise "Must pass generating_model_name" unless params[:generating_model_name].present?
+    ai_markup = @video.populate_ai_markup(params.except(:id, :action, :controller, :format))
     render json: ai_markup.as_json
   rescue => e
     render json: {error: e.message}
