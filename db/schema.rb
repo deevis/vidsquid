@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_12_073443) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_12_105617) do
   create_table "action_text_rich_texts", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -51,15 +51,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_12_073443) do
 
   create_table "ai_markups", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "video_id", null: false
-    t.string "summary_1", limit: 1000
-    t.string "summary_2", limit: 1000
-    t.string "summary_3", limit: 1000
-    t.string "title_1", limit: 200
-    t.string "title_2", limit: 200
-    t.string "title_3", limit: 200
-    t.string "hashtags_1", limit: 100
-    t.string "hashtags_2", limit: 100
-    t.string "hashtags_3", limit: 100
+    t.string "summary_1", limit: 1400
+    t.string "summary_2", limit: 1400
+    t.string "summary_3", limit: 1400
+    t.string "title_1", limit: 300
+    t.string "title_2", limit: 300
+    t.string "title_3", limit: 300
+    t.string "hashtags_1", limit: 200
+    t.string "hashtags_2", limit: 200
+    t.string "hashtags_3", limit: 200
     t.string "people_identified", limit: 256
     t.string "places_identified", limit: 256
     t.string "generating_model_name", limit: 128
