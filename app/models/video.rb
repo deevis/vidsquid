@@ -69,12 +69,14 @@ class Video < ApplicationRecord
   end
 
   # generating_model_name, summary_x, title_x, hashtags_x, people_identified, places_identifed
-  def populate_ai_markup(params)
-    params.each do |k,v|
+  def populate_ai_markup(fields)
+    # only let legal column through
+    fields = fields.with_indifferent_access.slice(*AiMarkup.column_names)
+    fields.each do |k,v|
       puts "Param[#{k}] => #{v}"
     end
-    ai_markup = self.ai_markups.where(generating_model_name: params[:generating_model_name]).first_or_create
-    ai_markup.update!(params.permit!)
+    ai_markup = self.ai_markups.where(generating_model_name: fields[:generating_model_name]).first_or_create
+    ai_markup.update!(fields)
   end
 
   # populate_whisper_data - 1 mode:

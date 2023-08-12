@@ -103,9 +103,12 @@ class VideosController < ApplicationController
   # post :populate_ai_markup, format: :json # generating_model_name, summary_1, title_1, hashtags_1, people_identified, places_identifed
   def populate_ai_markup
     raise "Must pass generating_model_name" unless params[:generating_model_name].present?
-    ai_markup = @video.populate_ai_markup(params.except(:id, :action, :controller, :format))
+    fields = params.to_h.with_indifferent_access.except(:id, :action, :controller, :format)
+    ai_markup = @video.populate_ai_markup(fields)
     render json: ai_markup.as_json
   rescue => e
+    Rails.logger.error e.message
+    Rails.logger.error e.backtrace.join("\n")
     render json: {error: e.message}
   end
 
