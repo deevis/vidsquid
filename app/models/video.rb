@@ -41,7 +41,7 @@ class Video < ApplicationRecord
   # 6400  10600  Perhaps we live in an entirely new era and a new time where my generation,
   # 10600  14200  millennials, actually do see value in something which is digital rather than
   
-  def whisper_tsv
+  def read_whisper_tsv
     return nil if file.nil?
     filepath = "#{file_on_disk}.tsv"
     if File.exist?(filepath)
@@ -51,13 +51,13 @@ class Video < ApplicationRecord
     end
   end
 
-  def set_whisper_tsv(whisper_tsv)
-    return nil if file.nil?
-    filepath = "#{file_on_disk}.tsv"
-    File.open(filepath, 'w') do |f|
-      f.write(whisper_tsv)
-    end
-  end
+  # def set_whisper_tsv(whisper_tsv)
+  #   return nil if file.nil?
+  #   filepath = "#{file_on_disk}.tsv"
+  #   File.open(filepath, 'w') do |f|
+  #     f.write(whisper_tsv)
+  #   end
+  # end
   
   def read_whisper_txt
     filepath = "#{file_on_disk}.txt"
@@ -77,37 +77,34 @@ class Video < ApplicationRecord
     ai_markup.update!(params.permit!)
   end
 
-  # populate_whisper_data - 2 modes:
+  # populate_whisper_data - 1 mode:
   #     1) whisper_txt and whisper_tsv are provided, and we use provided values
-  #     2) whisper_txt and whisper_tsv are NOT provided, and we use data in the file system
+  #     (deprecated) - 2) whisper_txt and whisper_tsv are NOT provided, and we use data in the file system
   # 
   def populate_whisper_data(whisper_txt: nil, whisper_tsv: nil, whisper_model: 'medium')  # large, base
-    if whisper_txt.nil?
-      self.whisper_txt = read_whisper_txt
-    else
-      self.whisper_txt = whisper_txt
-      set_whisper_tsv(whisper_tsv)
-    end
-    
+    raise "No whisper_txt provided" if whisper_txt.nil?
+    raise "No whisper_tsv provided" if whisper_tsv.nil?
+    self.whisper_txt = whisper_txt
+    self.whisper_tsv = whisper_tsv
     self.whisper_model = whisper_model
     self.save!
   end
 
-  def self.populate_whisper_data(whisper_model='medium')  # large, base
-    # First, get the videos that don't have whisper attributes, but do have whisper files created
-    newly_transcribed = Video.find_each.select{|v| v.whisper_tsv.present? && v.whisper_txt.nil?}
-    count = 0
-    errors = []
-    newly_transcribed.each do |v|
-      begin
-        v.populate_whisper_data(whisper_model)
-        count += 1
-      rescue => e
-        errors << {video_id: v.id, error: e.message}
-      end
-    end
-    { count: count, errors: errors }
-  end
+  # def self.populate_whisper_data(whisper_model='medium')  # large, base
+  #   # First, get the videos that don't have whisper attributes, but do have whisper files created
+  #   newly_transcribed = Video.find_each.select{|v| v.whisper_tsv.present? && v.whisper_txt.nil?}
+  #   count = 0
+  #   errors = []
+  #   newly_transcribed.each do |v|
+  #     begin
+  #       v.populate_whisper_data(whisper_model)
+  #       count += 1
+  #     rescue => e
+  #       errors << {video_id: v.id, error: e.message}
+  #     end
+  #   end
+  #   { count: count, errors: errors }
+  # end
 
 
 

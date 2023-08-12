@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_11_051205) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_12_073443) do
   create_table "action_text_rich_texts", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -111,6 +111,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_11_051205) do
     t.string "filename"
     t.string "whisper_model"
     t.text "whisper_txt"
+    t.text "whisper_tsv"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

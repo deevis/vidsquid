@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get :list_untagged_video_paths, format: :json
       get :list_untranscribed_video_paths, format: :json
       get :list_transcribed_video_paths, format: :json
+      get :list_no_ai_markup_for_model_videos, format: :json
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

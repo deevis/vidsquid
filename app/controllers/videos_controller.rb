@@ -6,7 +6,8 @@ class VideosController < ApplicationController
                                       populate_ai_markup]
 
   # TODO: Add authentication
-  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription add_tag populate_ai_markup]
+  skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription 
+                                      add_tag populate_ai_markup]
 
   def add_tag
     tags = params[:tag].split(",")
@@ -104,6 +105,22 @@ class VideosController < ApplicationController
     raise "Must pass generating_model_name" unless params[:generating_model_name].present?
     ai_markup = @video.populate_ai_markup(params.except(:id, :action, :controller, :format))
     render json: ai_markup.as_json
+  rescue => e
+    render json: {error: e.message}
+  end
+
+  # Call this method to get the ids of all the videos that are eligible for ai markup by
+  # a specific generating_model_name (TheBloke/MythoLogic-L2-13B-GPTQ:gptq-8bit-64g-actorder_True) 
+  # Will return video ids that have no ai_markup for the specified generating_model_name
+  # Videos must have whisper_txt populated with length >= params[:min_whisper_txt_length] characters to be included
+  def list_no_ai_markup_for_model_videos
+    raise "Must pass generating_model_name" unless params[:generating_model_name].present?
+    min_whisper_txt_length = (params[:min_whisper_txt_length].presence || 100).to_i
+    model_name = params[:generating_model_name]
+    video_ids = Video.where("length(whisper_txt) >= ?", min_whisper_txt_length).pluck(:id)
+    ai_markup_ids = AiMarkup.where(generating_model_name: model_name).pluck(:video_id)
+    return_ids = video_ids - ai_markup_ids
+    render json: { count: return_ids.length, min_whisper_txt_length: min_whisper_txt_length, video_ids: return_ids}
   rescue => e
     render json: {error: e.message}
   end
