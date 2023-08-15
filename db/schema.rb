@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_12_105617) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_15_021032) do
   create_table "action_text_rich_texts", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -68,6 +68,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_12_105617) do
     t.integer "hashtags_chosen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "timing_json"
     t.index ["video_id"], name: "index_ai_markups_on_video_id"
   end
 

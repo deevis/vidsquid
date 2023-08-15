@@ -11,6 +11,7 @@
 #  filename      :string(255)
 #  whisper_model :string(255)
 #  whisper_txt   :text(65535)
+#  whisper_tsv   :text(65535)
 #
 class Video < ApplicationRecord
   has_many :ai_markups, dependent: :destroy
@@ -71,7 +72,12 @@ class Video < ApplicationRecord
   # generating_model_name, summary_x, title_x, hashtags_x, people_identified, places_identifed
   def populate_ai_markup(fields)
     # only let legal column through
-    fields = fields.with_indifferent_access.slice(*AiMarkup.column_names)
+    fields = fields.with_indifferent_access
+    timings = fields.delete(:timings)
+    if timings.present?
+      fields[:timing_json] = timings.to_json
+    end
+    fields = fields.slice(*AiMarkup.column_names)
     fields.each do |k,v|
       puts "Param[#{k}] => #{v}"
     end

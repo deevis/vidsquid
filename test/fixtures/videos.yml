@@ -11,6 +11,7 @@
 #  filename      :string(255)
 #  whisper_model :string(255)
 #  whisper_txt   :text(65535)
+#  whisper_tsv   :text(65535)
 #
 
 one:
