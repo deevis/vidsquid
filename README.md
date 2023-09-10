@@ -61,7 +61,7 @@ with v
 match (v)-[:TAGGED_AS]->(t:Tag)
 return distinct v, t
 ```
-
+![Neo4J connections between 2 Tags](github_images\neo4j_anthony_fauci_plandemic_connections.png?raw=true "Neo4J connections between 2 Tags")
 ## Deploy docker container
 
 ### Powershell - arm64 target  (raspberry pi, new macbooks...)
