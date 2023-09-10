@@ -52,6 +52,16 @@ RETURN t, COLLECT(v) as videos
 ORDER BY SIZE(videos) DESC LIMIT 10
 ```
 
+### Visualize connections between any two tags
+```
+match p=allShortestPaths((t1:Tag{label:"anthony fauci"})-[*]-(t2:Tag{label:"plandemic"}))
+WITH [node in nodes(p) WHERE node:Video] as videos
+unwind videos as v
+with v
+match (v)-[:TAGGED_AS]->(t:Tag)
+return distinct v, t
+```
+
 ## Deploy docker container
 
 ### Powershell - arm64 target  (raspberry pi, new macbooks...)
