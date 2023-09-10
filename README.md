@@ -52,7 +52,7 @@ RETURN t, COLLECT(v) as videos
 ORDER BY SIZE(videos) DESC LIMIT 10
 ```
 
-### Visualize connections between any two tags
+### Visualize sub-graph between any two tags
 ```
 match p=allShortestPaths((t1:Tag{label:"anthony fauci"})-[*]-(t2:Tag{label:"plandemic"}))
 WITH [node in nodes(p) WHERE node:Video] as videos
@@ -61,7 +61,17 @@ with v
 match (v)-[:TAGGED_AS]->(t:Tag)
 return distinct v, t
 ```
-![Neo4J connections between 2 Tags](github_images/neo4j_anthony_fauci_plandemic_connections.png?raw=true "Neo4J connections between 2 Tags")
+![Neo4J subgraph connections between 2 Tags](github_images/neo4j_anthony_fauci_plandemic_connections.png?raw=true "Neo4J connections between 2 Tags")
+
+### Visualize direct paths between any two tags
+```
+match p=allShortestPaths((t1:Tag{label:"election fraud"})-[*]-(t2:Tag{label:"dog"}))
+where NONE(node IN nodes(p) WHERE node.label = "funny" or node.label = "comedy" or node.label = "perspective")
+AND SIZE(NODES(p)) >= 3
+return p limit 4
+```
+![Neo4J direct connections between 2 Tags](github_images/neo4j_election_fraud_dog_connections.png?raw=true "Neo4J direct connections between 2 Tags")
+
 ## Deploy docker container
 
 ### Powershell - arm64 target  (raspberry pi, new macbooks...)
