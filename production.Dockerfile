@@ -62,6 +62,8 @@ RUN npm install \
 
 RUN bundle exec rails assets:clobber assets:precompile
 
+RUN mkdir -p tmp/pids
+
 EXPOSE 3000
 ENTRYPOINT ["app/lib/entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
