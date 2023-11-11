@@ -26,7 +26,24 @@
 require "test_helper"
 
 class AiMarkupTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "long hashtags get trimmed appropriately" do
+    # 15 hashtags
+    s = "philosophy, fallacies, logicalreasoning, argumentation, epistemology, lifesummary, timeisshort, beingmegaefficient, focusingontheimportantstuff, eliminatetheunnecessary, Rappers, Freestyle, Lyricism, SpittingFire, KillingIt"
+    tags = s.split(', ')
+    puts "s.length = #{s.length}"
+    puts "tags.length = #{tags.length}"
+    puts "tags = #{tags}"
+    assert tags.length == 15
+    assert s.length > 200
+    trimmed = AiMarkup.trim_hashtags(s)
+    puts "trimmed.length = #{trimmed.length}"
+    trimmed_tags = trimmed.split(', ')
+    puts "trimmed_tags.length = #{trimmed_tags.length}"
+    newly_created_tags = trimmed_tags - tags
+    assert newly_created_tags.length == 0
+    discarded_tags = tags - trimmed_tags
+    puts "discarded_tags.length = #{discarded_tags.length}"
+    puts "discarded_tags = #{discarded_tags}"
+    assert discarded_tags.length > 1
+  end
 end

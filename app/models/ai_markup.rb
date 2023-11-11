@@ -29,9 +29,27 @@ class AiMarkup < ApplicationRecord
   validates :video_id, presence: true
   validates :generating_model_name, presence: true
 
+  before_save :trim_hashtags
+
   def timings
     return {} if timing_json.nil?
     JSON.parse(timing_json)
   end
 
+  private
+  def trim_hashtags
+    self.hashtags_1 = AiMarkup.trim_hashtags(self.hashtags_1)
+    self.hashtags_2 = AiMarkup.trim_hashtags(self.hashtags_2)
+    self.hashtags_3 = AiMarkup.trim_hashtags(self.hashtags_3)
+  end
+
+  def self.trim_hashtags(hashtags)
+    return hashtags if hashtags.length <= 200
+    tags = hashtags.split(', ')
+    while tags.join(', ').length > 200
+      puts "Discarding tag: #{tags.last}"
+      tags.pop
+    end
+    tags.join(', ')
+  end
 end

@@ -78,11 +78,12 @@ class Video < ApplicationRecord
       fields[:timing_json] = timings.to_json
     end
     fields = fields.slice(*AiMarkup.column_names)
-    fields.each do |k,v|
-      puts "Param[#{k}] => #{v}"
+    ai_markup = self.ai_markups.where(generating_model_name: fields[:generating_model_name]).first_or_create do |am|
+      fields.each do |k,v|
+        puts "Param[#{k}] => #{v}"
+        am.send("#{k}=", v)
+      end 
     end
-    ai_markup = self.ai_markups.where(generating_model_name: fields[:generating_model_name]).first_or_create
-    ai_markup.update!(fields)
   end
 
   # populate_whisper_data - 1 mode:
