@@ -30,20 +30,26 @@ class AiMarkupTest < ActiveSupport::TestCase
     # 15 hashtags
     s = "philosophy, fallacies, logicalreasoning, argumentation, epistemology, lifesummary, timeisshort, beingmegaefficient, focusingontheimportantstuff, eliminatetheunnecessary, Rappers, Freestyle, Lyricism, SpittingFire, KillingIt"
     tags = s.split(', ')
-    puts "s.length = #{s.length}"
-    puts "tags.length = #{tags.length}"
-    puts "tags = #{tags}"
+    L.info "s.length = #{s.length}"
+    L.info "tags.length = #{tags.length}"
+    L.info "tags = #{tags}"
     assert tags.length == 15
     assert s.length > 200
     trimmed = AiMarkup.trim_hashtags(s)
-    puts "trimmed.length = #{trimmed.length}"
+    L.info "trimmed.length = #{trimmed.length}"
     trimmed_tags = trimmed.split(', ')
-    puts "trimmed_tags.length = #{trimmed_tags.length}"
+    L.info "trimmed_tags.length = #{trimmed_tags.length}"
     newly_created_tags = trimmed_tags - tags
     assert newly_created_tags.length == 0
     discarded_tags = tags - trimmed_tags
-    puts "discarded_tags.length = #{discarded_tags.length}"
-    puts "discarded_tags = #{discarded_tags}"
+    L.info "discarded_tags.length = #{discarded_tags.length}"
+    L.info "discarded_tags = #{discarded_tags}"
     assert discarded_tags.length > 1
+  end
+
+  test "nil hashtags don't break the system" do
+    nilTrim = AiMarkup.trim_hashtags(nil)
+    L.info "nilTrim = #{nilTrim}"
+    assert true
   end
 end

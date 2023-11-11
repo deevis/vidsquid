@@ -105,11 +105,11 @@ class VideosController < ApplicationController
     raise "Must pass generating_model_name" unless params[:generating_model_name].present?
     fields = params.permit!.to_h.with_indifferent_access.except(:id, :action, :controller, :format)
     ai_markup = @video.populate_ai_markup(fields)
-    render json: ai_markup.as_json
+    render json: {success: true}.merge(ai_markup.as_json)
   rescue => e
     Rails.logger.error e.message
     Rails.logger.error e.backtrace.join("\n")
-    render json: {error: e.message}
+    render json: {success: false, error: e.message}
   end
 
   # Call this method to get the ids of all the videos that are eligible for ai markup by

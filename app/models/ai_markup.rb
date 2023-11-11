@@ -44,10 +44,10 @@ class AiMarkup < ApplicationRecord
   end
 
   def self.trim_hashtags(hashtags)
-    return hashtags if hashtags.length <= 200
+    return hashtags if hashtags.nil? || hashtags.length <= 200
     tags = hashtags.split(', ')
     while tags.join(', ').length > 200
-      puts "Discarding tag: #{tags.last}"
+      Rails.logger.info "Discarding tag: #{tags.last}"
       tags.pop
     end
     tags.join(', ')
