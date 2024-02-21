@@ -2,13 +2,15 @@
 <div class="grid grid-cols-4 grid-rows-1">
   <div class="px-2 py-5 text-sm">
       <h3>Tags</h3>
-      <div class="px-0 py-2 grid grid-cols-10">
+      <div class="px-0 py-2">
         <% @video.tag_list.sort.each do |tag| %>
-          <div>
-            <%= link_to "x", remove_tag_video_path(@video, tag: tag), class: "action-destroy"  %>
-          </div>
-          <div class="col-span-9">
-            <%= link_to tag, rabbithole_videos_path(add_tag: tag), class: "action-primary" %>
+          <div id="tag-<%= tag.parameterize %>">
+            <span>
+              <%= link_to "x", remove_tag_video_path(@video, tag: tag), class: "action-destroy"  %>
+            </span>
+            <span>
+              <%= link_to tag, rabbithole_videos_path(add_tag: tag), class: "action-primary" %>
+            </span>
           </div>
         <% end %>
       </div>
@@ -43,6 +45,9 @@
   </div>
 
   <% video_id = dom_id @video %>
+  <% existing_tags = ActsAsTaggableOn::Tag.pluck(:name) %>
+  <% spaceless_tags = existing_tags.map{|t| t.gsub(" ", "")} %>
+  <% already_on_video_tags = @video.tag_list %>
 
   <div class="px-2 py-5 text-xs col-span-2">
     <% @video.ai_markups.each do |aim| %>
@@ -50,7 +55,49 @@
       <hr>
       <% aim.attributes.except("id", "video_id", "created_at", "updated_at", "generating_model_name").each do |k,v| %>
         <% next if v.blank? %>
-        <div><span class="font-bold"><%= k %></span>: <%= v %></div>
+        <% if k.start_with?("hashtags_") %>
+          <div>
+            <span class="font-bold"><%= k %></span>:
+            <% v.split(",").each do |tag| %>
+              <% 
+                # normalize tag to be downcased with spaces
+                normalized = tag.titleize.downcase.strip
+                # Use regex to insert a space between any letter and digit, or digit and letter
+                normalized = normalized.gsub(/(?<=[A-Za-z])(?=\d)|(?<=\d)(?=[A-Za-z])/, ' ')
+              %>
+              <% # render bold if tag is already on video %>
+              <% if already_on_video_tags.include?(tag) || already_on_video_tags.include?(normalized) || already_on_video_tags.include?(normalized.gsub(" ","-")) || already_on_video_tags.detect{|t| t.gsub(" ","") == normalized} %>
+                <span class="px-3 font-bold"><%= tag %></span>
+              <% elsif existing_tags.include?(normalized) || spaceless_tags.include?(normalized) %>
+                <% tag_to_use = existing_tags.include?(normalized) ? normalized : nil %>
+                <% tag_to_use ||= existing_tags.detect{|t| t.gsub(" ","") == normalized} %>
+                <%= link_to "+#{tag}", add_tag_video_path(@video, tag: tag_to_use) %>
+              <% elsif tag.index(" ").nil? || tag.titleize.index(" ") %>
+                <% # render link to add tag to video %>
+                <%= link_to "++#{tag}", add_tag_video_path(@video, tag: tag) %>
+              <% else %>
+                <span class="px-2"><%= tag %></span>
+              <% end %>
+            <% end %>
+          </div>
+          <% elsif k.start_with?("title_") %>
+          <div>
+            <span class="font-bold"><%= k %></span>: 
+            <% if @video.title.downcase == v.downcase.gsub('"','') %>
+              <span class="font-bold"><%= v %></span>
+            <% else %>
+              <% # render link to set title to this value %>
+              <%= link_to v, set_title_video_path(@video, title: v) %>
+            <% end %>
+          </div>
+        <% elsif k.start_with?("summary_") %>
+          <div>
+            <span class="font-bold"><%= k %></span>: <%= v %>
+          </div>
+
+        <% else %>
+          <div><span class="font-bold"><%= k %></span>: <%= v %></div>
+        <% end %>
       <% end %>
     <% end %>
     <% whisper_tsv = @video.whisper_tsv %>

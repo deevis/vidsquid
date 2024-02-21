@@ -3,13 +3,18 @@ class VideosController < ApplicationController
   
   before_action :set_video, only: %i[ show edit update destroy add_tag 
                                       remove_tag populate_whisper_transcription
-                                      populate_ai_markup]
+                                      populate_ai_markup set_title]
 
   # TODO: Add authentication
   skip_before_action :verify_authenticity_token, only: %i[populate_whisper_transcription 
                                       add_tag populate_ai_markup]
 
+  skip_forgery_protection only: :remove_tag                                      
+
   def add_tag
+    # Convert camel case or pascal case to all lower case separated by spaces
+    #    "AntiRacism" ==> "anti racism"
+    #    "AntiRacism,BlackLivesMatter" ==> "anti racism,black lives matter"
     tags = params[:tag].split(",")
     tag_string = tags.map do |tag|
       tag.gsub("#", "").titleize.downcase
@@ -17,14 +22,30 @@ class VideosController < ApplicationController
 
     @video.tag_list.add(tag_string, parse: true)
     @video.save!
-    redirect_to @video
+    respond_to do |format|
+      format.html { redirect_to @video}
+      format.js   # show.js.erb
+    end
   end
 
   def remove_tag
     @video.tag_list.remove(params[:tag], parse: true)
     @video.save!
-    redirect_to @video
+    respond_to do |format|
+      format.html { redirect_to @video}
+      format.js   # remove_tag.js.erb
+    end
   end
+
+  def set_title
+    @video.title = params[:title].gsub('"', '')
+    @video.save!
+    respond_to do |format|
+      format.html { redirect_to @video}
+      format.js   # set_title.js.erb
+    end
+  end
+
 
   def rabbithole
     @used_tags = (params[:tagged_with].presence || '').split("|")
@@ -41,6 +62,20 @@ class VideosController < ApplicationController
     end
   end
 
+  def untitled
+    @title = "Untitled Videos"
+    @videos = Video.where("title is null or title like '%.mp4'").page(params[:page]).per(12)
+    render :index
+  end
+
+  # Retrieves videos based on the provided tags and generates a tag cloud.
+  #
+  # Parameters:
+  # - used_tags: An array of tags used to filter the videos.
+  #
+  # Returns:
+  # - None
+  #
   def get_rabbit_tags(used_tags)
     @videos = nil
     return if used_tags.blank?
@@ -59,6 +94,14 @@ class VideosController < ApplicationController
     end
   end
 
+  # Finds the next untagged video and redirects to its show page.
+  # If all videos are already tagged, it redirects back to the root path.
+  #
+  # Example:
+  #   next_untagged_video
+  #
+  # Returns:
+  #   Redirects to the show page of the next untagged video or back to the root path.
   def next_untagged_video
     total_vids = Video.count
     ids = untagged_video_ids

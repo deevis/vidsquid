@@ -1,7 +1,7 @@
 <p style="color: green"><%= notice %></p>
 
 <div>
-    <h1 class="text-2xl">Videos</h1>
+    <h1 class="text-2xl"><%= @title || "Videos" %></h1>
     <%= paginate @videos %>
 </div>
 

@@ -3,10 +3,12 @@ Rails.application.routes.draw do
     member do
       get :add_tag
       get :remove_tag
+      get :set_title
       post :populate_whisper_transcription, format: :json # whisper_txt, whisper_tsv, whisper_model
       post :populate_ai_markup, format: :json # generating_model_name, summary_1, title_1, hashtags_1, people_identified, places_identifed
     end
     collection do
+      get :untitled
       get :rabbithole
       get :next_untagged_video
       get :list_untagged_video_paths, format: :json
