@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
   resources :videos do
     member do
-      get :add_tag
-      get :remove_tag
-      get :set_title
+      get :add_tag, format: :json
+      get :remove_tag, format: :json
+      get :set_title, format: :json
       post :populate_whisper_transcription, format: :json # whisper_txt, whisper_tsv, whisper_model
       post :populate_ai_markup, format: :json # generating_model_name, summary_1, title_1, hashtags_1, people_identified, places_identifed
     end

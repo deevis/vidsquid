@@ -22,9 +22,12 @@ class VideosController < ApplicationController
 
     @video.tag_list.add(tag_string, parse: true)
     @video.save!
+    # return the tags json
     respond_to do |format|
+      # format.json { render json: @video.tag_list }
       format.html { redirect_to @video}
-      format.js   # show.js.erb
+      format.json { render partial: "show_tags", locals: { video: @video }, formats: [:html]}
+      format.js   # add_tag.js.erb
     end
   end
 
@@ -32,7 +35,9 @@ class VideosController < ApplicationController
     @video.tag_list.remove(params[:tag], parse: true)
     @video.save!
     respond_to do |format|
+      # format.json { render json: @video.tag_list }
       format.html { redirect_to @video}
+      format.json { render partial: "show_tags", locals: { video: @video }, formats: [:html]}
       format.js   # remove_tag.js.erb
     end
   end
@@ -41,6 +46,7 @@ class VideosController < ApplicationController
     @video.title = params[:title].gsub('"', '')
     @video.save!
     respond_to do |format|
+      format.json { render json: {title: @video.title} }
       format.html { redirect_to @video}
       format.js   # set_title.js.erb
     end

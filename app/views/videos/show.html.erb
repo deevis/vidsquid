@@ -2,17 +2,8 @@
 <div class="grid grid-cols-4 grid-rows-1">
   <div class="px-2 py-5 text-sm">
       <h3>Tags</h3>
-      <div class="px-0 py-2">
-        <% @video.tag_list.sort.each do |tag| %>
-          <div id="tag-<%= tag.parameterize %>">
-            <span>
-              <%= link_to "x", remove_tag_video_path(@video, tag: tag), class: "action-destroy"  %>
-            </span>
-            <span>
-              <%= link_to tag, rabbithole_videos_path(add_tag: tag), class: "action-primary" %>
-            </span>
-          </div>
-        <% end %>
+      <div id="<%= dom_id @video%>_tags" class="px-0 py-2">
+        <%= render "show_tags", video: @video %>
       </div>
       <div class="text-black">
         <%= form_with(method: :get, url: add_tag_video_path(@video)) do |form| %>
@@ -71,10 +62,16 @@
               <% elsif existing_tags.include?(normalized) || spaceless_tags.include?(normalized) %>
                 <% tag_to_use = existing_tags.include?(normalized) ? normalized : nil %>
                 <% tag_to_use ||= existing_tags.detect{|t| t.gsub(" ","") == normalized} %>
-                <%= link_to "+#{tag}", add_tag_video_path(@video, tag: tag_to_use) %>
+                <span class="cursor-pointer" data-controller="video" data-action="click->video#addTag" data-video-videoid-value="<%= @video.id %>" data-video-tag-value="<%= tag_to_use %>">
+                  <span class="px-2">+<%= tag %></span>
+                </span>
+                <% # link_to "+#{tag}", add_tag_video_path(@video, tag: tag_to_use) %>
               <% elsif tag.index(" ").nil? || tag.titleize.index(" ") %>
                 <% # render link to add tag to video %>
-                <%= link_to "++#{tag}", add_tag_video_path(@video, tag: tag) %>
+                <span class="cursor-pointer" data-controller="video" data-action="click->video#addTag" data-video-videoid-value="<%= @video.id %>" data-video-tag-value="<%= tag %>">
+                  <span class="px-2">++<%= tag %></span>
+                </span>
+                <% # link_to "++#{tag}", add_tag_video_path(@video, tag: tag) %>
               <% else %>
                 <span class="px-2"><%= tag %></span>
               <% end %>
@@ -87,7 +84,8 @@
               <span class="font-bold"><%= v %></span>
             <% else %>
               <% # render link to set title to this value %>
-              <%= link_to v, set_title_video_path(@video, title: v) %>
+              <span class="cursor-pointer" data-controller="video" data-action="click->video#setTitle" data-video-videoid-value="<%= @video.id %>" data-video-title-value="<%= v %>"><%= v %></span>
+              <% # link_to v, set_title_video_path(@video, title: v) %>
             <% end %>
           </div>
         <% elsif k.start_with?("summary_") %>

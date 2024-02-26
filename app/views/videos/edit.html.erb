@@ -1,18 +1,37 @@
-<h1>Editing video</h1>
+<p style="color: green"><%= notice %></p>
+<div class="grid grid-cols-4 grid-rows-1">
+  <div class="px-2 py-5 text-sm">
 
-<%= render "form", video: @video %>
-<br>
-  <p>
-    <strong>Filesize:</strong>
-    <%= @video.byte_size %>
-  </p>
+    <h3>Editing video</h3>
 
-  <p>
-    <strong>Checksum:</strong>
-    <%= @video.checksum %>
-  </p>
+    <%= render "form", video: @video %>
+    <br>
+      <p>
+        <strong>Filesize:</strong>
+        <%= @video.byte_size %>
+      </p>
 
-<div>
-  <%= link_to "Show this video", @video %> |
-  <%= link_to "Back to videos", videos_path %>
+      <p>
+        <strong>Checksum:</strong>
+        <%= @video.checksum %>
+      </p>
+
+    <div>
+      <%= link_to "Show this video", @video, class: "action-secondary" %> |
+      <%= link_to "Back to videos", videos_path, class: "action-edit" %>
+    </div>
+    <p>
+            <strong> Whisper text</strong>
+            <%= @video.whisper_txt %>
+    </p>
+
+    <p>
+            <strong> Whisper TSV</strong>
+            <pre>
+              <%= @video.whisper_tsv %>
+            </pre>
+    </p>
+  </div>
+
+
 </div>

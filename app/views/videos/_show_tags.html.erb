@@ -1,0 +1,13 @@
+<% @video.tag_list.sort.each do |tag| %>
+    <div id="tag-<%= tag.parameterize %>">
+    <span>
+        <span class="cursor-pointer" data-controller="video" data-action="click->video#removeTag" data-video-videoid-value="<%= @video.id %>" data-video-tag-value="<%= tag %>">
+            <span class="action-destroy">x</span>
+        </span>
+        <% # link_to "x", remove_tag_video_path(@video, tag: tag), class: "action-destroy"  %>
+    </span>
+    <span>
+        <%= link_to tag, rabbithole_videos_path(add_tag: tag), class: "action-primary" %>
+    </span>
+    </div>
+<% end %>

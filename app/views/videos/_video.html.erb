@@ -6,7 +6,9 @@
 <% video_id = dom_id video %>
 <div id="<%= video_id %>_container" class="items-center">
   <p class="text-sm break-words items-center">
-    <%= link_to video.title, video %>
+    <%= link_to video do %>
+      <span id="<%= video_id %>_title"><%= video.title %></span>
+    <% end %>
     <%= link_to "⇓", rails_blob_path(video.file, disposition: 'attachment') %>
   </p>
     <% if show_tags == 'true' %>
